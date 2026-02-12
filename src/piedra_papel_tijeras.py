@@ -6,14 +6,18 @@ import random
 PIEDRA = 'piedra'
 PAPEL = 'papel'
 TIJERAS = 'tijeras'
+LAGARTO = 'lagarto'
+SPOCK = 'spock'
 
 
 # Mapa de reglas: cada jugada mapea a las jugadas que derrota y el mensaje asociado.
 # Para extender (ej. añadir 'lagarto' o 'spock') actualiza solamente este diccionario.
 mapa_ganador = {
-    PIEDRA: {TIJERAS: 'Piedra rompe tijeras.'},
-    PAPEL: {PIEDRA: 'Papel cubre piedra.'},
-    TIJERAS: {PAPEL: 'Tijeras cortan papel.'},
+    PIEDRA: {TIJERAS: 'Piedra rompe tijeras.',LAGARTO:'Piedra aplasta lagarto'},
+    PAPEL: {PIEDRA: 'Papel cubre piedra.',SPOCK: 'Papel desautoriza Spock'},
+    TIJERAS: {PAPEL: 'Tijeras cortan papel.',LAGARTO: 'Tijeras decapita lagarto'},
+    LAGARTO: {PAPEL: 'Lagarto come papel',SPOCK:'Lagarto envenena a Spock'},
+    SPOCK: {TIJERAS: 'Spock rompe tijera', PIEDRA: 'Spock vaporiza piedra'}
 }
 
 
