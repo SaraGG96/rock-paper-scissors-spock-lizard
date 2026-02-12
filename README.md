@@ -1,55 +1,67 @@
-Práctica curso Programación para IA
-===================================
+# Piedra, Papel, Tijeras, Lagarto, Spock
 
-Extender el código disponible en `05_RPS_More_AI.py` con la funcionalidad necesaria para
-implementar la variante lagarto - Spock del juego piedra, papel o tijeras.
+Proyecto realizado por:  
+[Kayrxn](https://github.com/EdMorCa67)    
+[EdMorCa67](https://github.com/Kayrxn) 
 
-[Práctica curso Programacion para IA](#práctica-curso-programacion-para-ia)
-  - [Solución](#solución)
-  - [Refactorizaciones](#refactorizaciones)
-  - [Testing](#testing)
+Este proyecto implementa el juego "Piedra, Papel, Tijeras, Lagarto, Spock" siguiendo buenas prácticas de diseño y extensibilidad. El código está preparado para ser fácilmente ampliado y probado, y se apoya en un diccionario de reglas para la lógica del juego.
 
+## Estructura del proyecto
 
-## Solución
+- `src/piedra_papel_tijeras.py`: Implementación principal del juego, reglas y lógica.
+- `test/test_piedra_papel_tijera.py`: Casos de prueba automatizados con pytest.
+- `pytest.ini`: Markers para tests parametrizados.
+- `requirements-dev.txt`: Dependencias de desarrollo (incluye pytest).
 
-Solución propuesta en [`RPS_spock_lizard.py`](.src/../src/RPS_spock_lizard.py)
+## Reglas del juego
 
-## Refactorizaciones
+Las reglas siguen la variante popularizada por la serie "The Big Bang Theory":
 
-Es necesario refactorizar la función `assess_game()` para conseguir una solución abierta a la extensión y cerrada a la modificación, o principio Open/Closed (OCP) de SOLID.
+- **Piedra** aplasta a Tijeras y Lagarto
+- **Papel** cubre a Piedra y desautoriza a Spock
+- **Tijeras** cortan Papel y decapitan Lagarto
+- **Lagarto** come Papel y envenena a Spock
+- **Spock** rompe Tijeras y vaporiza Piedra
 
-La inclusión de nuevas categorías en el juego original produce una extensión de la estructura `if-elif-else` que deriva en código cableado, o cierto [input kludge antipattern](https://sourcemaking.com/antipatterns/input-kludge).
+El resultado puede ser victoria, derrota o empate según las elecciones de usuario y ordenador.
 
-Podría haber optado por eliminar la cláusula `if-elif-else` implementando polimorfismo de clase, pero he optado por expresar en el diccionario `Victories` -que ya estaba implementado en el código inicial- las reglas de la lógica del juego de manera declarativa, para mejorar la legibilidad del código. 
+## Uso
 
-No es una solución 100% OCP puesto que si las categorías del juego aumentan no sería viable extender el diccionario, pero confiemos en que la serie _Big Bang Theory_ no goce de una secuela y aumenten el juego con nuevas acciones ;) 
+Puedes ejecutar el juego en modo interactivo:
 
-Para ello, he extendido el comportamiento del tipo enumerado `GameAction` simulando la diferencia de conjuntos en la función `minus(excluded_actions)`. Podría haber usado el tipo `set` de Python pero rompia la interfaz `list` necesaria en la función `get_random_computer_action()`. 
+```bash
+python -m src.piedra_papel_tijeras
+```
 
-He refactorizado la función `get_random_computer_action()` para reutilizarla en `get_winner_action(game_action)`.
+O bien importar y reutilizar la clase `JuegoPiedraPapelTijeras` en tus propios scripts.
 
-Finalmente, he encapsulado la lógica el juego en la clase `Game`. He decidido no usar una clase con métodos estáticos para poder generar distintas instancias del juego. 
+## Ejemplo de uso en código
 
+```python
+from src.piedra_papel_tijeras import JuegoPiedraPapelTijeras, PIEDRA, PAPEL
+
+juego = JuegoPiedraPapelTijeras()
+juego.evaluar_juego(PIEDRA, PAPEL)  # Muestra el resultado por consola
+```
 
 ## Testing
 
-En todo proceso de refactorización de código es necesario incluir un conunto de casos test en aquellos comportamientos más susceptibles de presentar defectos.
-
-Aunque no he practicado TDD estricta (que es como suelo codificar), he incluído casos test para eliminar defectos del código cuando he estimado que la lógica estaba completada.
-
-Es necesario contar con `pytest` instalado en el entorno virtual.
-
-Para seleccionar sólo los casos test de la lógica extendida: 
+El proyecto incluye tests automatizados con pytest. Para ejecutarlos:
 
 ```bash
-$ pytest -v -m lizard
-$ pytest -v -m spock
+pip install -r requirements-dev.txt
+python -m pytest -v
 ```
 
-## AIML
+Puedes filtrar por tipo de jugada usando markers, por ejemplo:
 
-He simplicado la salida por consola de la app al mensaje:
+```bash
+python -m pytest -v -m piedra
+python -m pytest -v -m spock
+```
 
-`"%s wins %s. You lost!" %(computer_action.name, user_action.name)`
+## Extensión y personalización
 
-Es posible implementar las salidas de la aplicación de una manera más explícita usando un fichero `.aiml` y accediendo a los elementos XML con el módulo `xml.etree.ElementTree`.
+- Puedes modificar el diccionario `mapa_ganador` para añadir nuevas reglas o variantes.
+- La lógica está encapsulada en una clase para facilitar pruebas y ampliaciones.
+
