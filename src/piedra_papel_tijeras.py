@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import random
+from typing import Dict, Mapping
 
 
 PIEDRA = 'piedra'
@@ -10,59 +11,80 @@ LAGARTO = 'lagarto'
 SPOCK = 'spock'
 
 
-# Mapa de reglas: cada jugada mapea a las jugadas que derrota y el mensaje asociado.
-# Para extender (ej. añadir 'lagarto' o 'spock') actualiza solamente este diccionario.
+# Mapa de reglas por defecto (se puede sobreescribir al instanciar la clase).
 mapa_ganador = {
-    PIEDRA: {TIJERAS: 'Piedra rompe tijeras.',LAGARTO:'Piedra aplasta lagarto'},
-    PAPEL: {PIEDRA: 'Papel cubre piedra.',SPOCK: 'Papel desautoriza Spock'},
-    TIJERAS: {PAPEL: 'Tijeras cortan papel.',LAGARTO: 'Tijeras decapita lagarto'},
-    LAGARTO: {PAPEL: 'Lagarto come papel',SPOCK:'Lagarto envenena a Spock'},
-    SPOCK: {TIJERAS: 'Spock rompe tijera', PIEDRA: 'Spock vaporiza piedra'}
+    PIEDRA: {TIJERAS: 'Piedra rompe tijeras.', LAGARTO: 'Piedra aplasta lagarto'},
+    PAPEL: {PIEDRA: 'Papel cubre piedra.', SPOCK: 'Papel desautoriza Spock'},
+    TIJERAS: {PAPEL: 'Tijeras cortan papel.', LAGARTO: 'Tijeras decapitan lagarto'},
+    LAGARTO: {PAPEL: 'Lagarto come papel', SPOCK: 'Lagarto envenena a Spock'},
+    SPOCK: {TIJERAS: 'Spock rompe tijera', PIEDRA: 'Spock vaporiza piedra'},
 }
 
 
-def evaluar_juego(accion_usuario, accion_computadora):
-    
-    """Decide el resultado usando `mapa_ganador`.
+class JuegoPiedraPapelTijeras:
 
-    - Empate cuando las acciones son iguales.
-    - Si `accion_computadora` está en `mapa_ganador[accion_usuario]` -> usuario gana.
-    - Si `accion_usuario` está en `mapa_ganador[accion_computadora]` -> usuario pierde.
-    - Si no existe la regla -> aviso de regla indefinida.
+    """
+    Juego Rock-Paper-Scissors (configurable vía `mapa_ganador`) orientado a objetos.
+    - Mantiene `self.mapa_ganador` y `self.opciones`.
+    - Métodos principales usan `self` (instancia) para facilitar extensión y pruebas.
     """
 
-    if accion_usuario == accion_computadora:
-        print(f"Usuario y ordenador eligieron {accion_usuario}. ¡Empate!")
-        return
+    def __init__(self, reglas: Mapping[str, Mapping[str, str]] = None) -> None:
+        self.mapa_ganador: Dict[str, Dict[str, str]] = (
+            {**mapa_ganador} if reglas is None else dict(reglas)
+        )
+        self.opciones = list(self.mapa_ganador.keys())
 
-    victorias_usuario = mapa_ganador.get(accion_usuario, {})
-    if accion_computadora in victorias_usuario:
-        print(f"{victorias_usuario[accion_computadora]} ¡Has ganado!")
-        return
+    def evaluar_juego(self, accion_usuario: str, accion_computadora: str) -> None:
 
-    victorias_computadora = mapa_ganador.get(accion_computadora, {})
-    if accion_usuario in victorias_computadora:
-        print(f"{victorias_computadora[accion_usuario]} ¡Has perdido!")
-        return
+        """
+        Evalúa y muestra el resultado entre `accion_usuario` y `accion_computadora`.
+        La salida por consola se mantiene para compatibilidad con la versión procedural.
+        """
 
-    # Fallback para reglas no definidas (mantiene robustez al añadir jugadas)
-    print(f"No hay regla definida para '{accion_usuario}' vs '{accion_computadora}'. Resultado indefinido.")
+        if accion_usuario == accion_computadora:
+            print(f"Usuario y ordenador eligieron {accion_usuario}. ¡Empate!")
+            return
+
+        victorias_usuario = self.mapa_ganador.get(accion_usuario, {})
+        if accion_computadora in victorias_usuario:
+            print(f"{victorias_usuario[accion_computadora]} ¡Has ganado!")
+            return
+
+        victorias_computadora = self.mapa_ganador.get(accion_computadora, {})
+        if accion_usuario in victorias_computadora:
+            print(f"{victorias_computadora[accion_usuario]} ¡Has perdido!")
+            return
+
+        print(
+            f"No hay regla definida para '{accion_usuario}' vs '{accion_computadora}'. Resultado indefinido."
+        )
+
+    def iniciar(self) -> None:
+
+        """Bucle principal del juego que pide entrada al usuario y evalúa rondas."""
+
+        while True:
+            accion_usuario = input(f"\nElige una opción: {', '.join(self.opciones)}: ")
+            if accion_usuario not in self.opciones:
+                print(f"Opción inválida. Opciones válidas: {', '.join(self.opciones)}")
+                continue
+
+            accion_computadora = random.choice(self.opciones)
+            print(f"\nHas elegido {accion_usuario}. El ordenador eligió {accion_computadora}\n")
+            self.evaluar_juego(accion_usuario, accion_computadora)
 
 
-def main():
-    # Derivar opciones a partir de `mapa_ganador` para que sólo esa estructura requiera cambios.
-    opciones = list(mapa_ganador.keys())
+def evaluar_juego_procedural(accion_usuario: str, accion_computadora: str) -> None:
+    juego = JuegoPiedraPapelTijeras()
+    juego.evaluar_juego(accion_usuario, accion_computadora)
 
-    while True:
-        accion_usuario = input(f"\nElige una opción: {', '.join(opciones)}: ")
-        if accion_usuario not in opciones:
-            print(f"Opción inválida. Opciones válidas: {', '.join(opciones)}")
-            continue
 
-        accion_computadora = random.choice(opciones)
-        print(f"\nHas elegido {accion_usuario}. El ordenador eligió {accion_computadora}\n")
-        evaluar_juego(accion_usuario, accion_computadora)
+def main() -> None:
+    juego = JuegoPiedraPapelTijeras()
+    juego.iniciar()
 
 
 if __name__ == "__main__":
     main()
+
