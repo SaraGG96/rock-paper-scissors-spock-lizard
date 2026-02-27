@@ -1,8 +1,8 @@
 # Piedra, Papel, Tijeras, Lagarto, Spock
 
 Proyecto realizado por:  
-[Kayrxn](https://github.com/EdMorCa67)    
-[EdMorCa67](https://github.com/Kayrxn) 
+Sara García Garrido — [SaraGG96](https://github.com/SaraGG96)    
+Lucas Iñarrea Barba —  [EdMorCa67](https://github.com/EdMorCa67) 
 
 Este proyecto implementa el juego "Piedra, Papel, Tijeras, Lagarto, Spock" siguiendo buenas prácticas de diseño y extensibilidad. El código está preparado para ser fácilmente ampliado y probado, y se apoya en un diccionario de reglas para la lógica del juego.
 
